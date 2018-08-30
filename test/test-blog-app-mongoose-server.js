@@ -29,3 +29,98 @@ function tearDownDb() {
   console.warn('Deleting database');
   return mongoose.connection.dropDatabase();
 }
+
+describe('Blog API resource', function() {
+
+  // we need each of these hook functions to return a promise
+  // otherwise we'd need to call a `done` callback. `runServer`,
+  // `seedBlogData` and `tearDownDb` each return a promise,
+  // so we return the value returned by these function calls.
+  before(function() {
+    return runServer(TEST_DATABASE_URL);
+  });
+
+  //Confirm the following is needed along with the decision to include 'faker' code
+  /****************
+  beforeEach(function() {
+    return seedBlogData();
+  });
+  ******************************/
+
+  afterEach(function() {
+    return tearDownDb();
+  });
+
+  after(function() {
+    return closeServer();
+  });
+
+  // Create a nested 'describe' statement for each API CRUD operation
+  // GET
+  describe('GET endpoint', function() {
+
+    it('should return all existing blog posts', function() {
+      // strategy:
+      //    1. get back all blogs returned by GET request to `/posts`
+      //    2. prove res has right status, data type
+      //    3. prove the number of posts we got back is equal to number
+      //       in db.
+      //
+      // need to have access to mutate and access `res` across
+      // `.then()` calls below, so declare it here so can modify in place
+      let res;
+      return chai.request(app)
+        .get('/posts')
+        .then(function(_res) {
+          // so subsequent .then blocks can access response object
+          res = _res;
+          expect(res).to.have.status(200);
+          // otherwise our db seeding didn't work          
+          expect(res.body.posts).to.have.lengthOf.at.least(1);
+          return BlogPost.count();
+        })
+        .then(function(count) {
+          
+          expect(res.body.posts).to.have.lengthOf(count);
+        });
+    });
+
+
+    it('should return blog posts with right fields', function() {
+      // Strategy: Get back all blog posts, and ensure they have expected keys
+
+      let resBlogPost;
+      return chai.request(app)
+        .get('/posts')
+        .then(function(res) {
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          
+          expect(res.body.posts).to.be.a('array');
+          expect(res.body.posts).to.have.lengthOf.at.least(1);
+
+          res.body.posts.forEach(function(post) {
+            expect(post).to.be.a('object');
+            expect(post).to.include.keys(
+              'title', 'content', 'author');
+          });
+          resBlogPost = res.body.posts[0];
+          return BlogPost.findById(resBlogPost.id);
+        })
+        .then(function(post) {
+
+          
+          expect(resBlogPost.title).to.equal(post.title);
+          expect(resBlogPost.content).to.equal(post.content);
+          expect(resBlogPost.author).to.equal(post.author);
+          
+        });
+    });
+  });
+
+  // POST
+  // PUT
+  // DELETE
+});
+
+  
