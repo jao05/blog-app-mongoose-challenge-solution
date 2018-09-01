@@ -30,6 +30,19 @@ function tearDownDb() {
   return mongoose.connection.dropDatabase();
 }
 
+function seedBlogData(){
+  const seededBlog = {
+    title: "A Great Blog",
+    content: "Some great content"
+    author: {
+      firstName: "Great",
+      lastName: "Author"
+    }
+  } 
+
+  return BlogPost.create(seededBlog);
+}
+
 describe('Blog API resource', function() {
 
   // we need each of these hook functions to return a promise
@@ -41,11 +54,11 @@ describe('Blog API resource', function() {
   });
 
   //Confirm the following is needed along with the decision to include 'faker' code
-  /****************
+  
   beforeEach(function() {
     return seedBlogData();
   });
-  ******************************/
+  
 
   afterEach(function() {
     return tearDownDb();
@@ -126,7 +139,11 @@ describe('Blog API resource', function() {
     // the data was inserted into db)
     it('should add a new blog post', function() {
 
-      const newBlogPost = generateRestaurantData(); //************* another generate consideration...will cause ERROR currently**********     
+      const newBlogPost = {
+        title: "sampleTitle",
+        content: "sampleContent",
+        author: "sampleAuthor"
+      }
 
       return chai.request(app)
         .post('/posts')
@@ -136,7 +153,7 @@ describe('Blog API resource', function() {
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
           expect(res.body).to.include.keys(
-            'id', 'title', 'content', 'author'); // ***** id here??************
+            '_id', 'title', 'content', 'author'); 
           expect(res.body.title).to.equal(newBlogPost.title);
           // because Mongo should have created id on insertion
           expect(res.body.id).to.not.be.null;
@@ -201,7 +218,7 @@ describe('Blog API resource', function() {
 
       let blogPost;
 
-      return Restaurant
+      return BlogPost
         .findOne()
         .then(function(_blogPost) {
           blogPost = _blogPost;
