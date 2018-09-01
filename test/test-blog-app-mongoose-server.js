@@ -126,7 +126,7 @@ describe('Blog API resource', function() {
     // the data was inserted into db)
     it('should add a new blog post', function() {
 
-      const newBlogPost = generateRestaurantData(); //************* another auto-generate consideration...**********     
+      const newBlogPost = generateRestaurantData(); //************* another generate consideration...will cause ERROR currently**********     
 
       return chai.request(app)
         .post('/posts')
@@ -138,7 +138,7 @@ describe('Blog API resource', function() {
           expect(res.body).to.include.keys(
             'id', 'title', 'content', 'author'); // ***** id here??************
           expect(res.body.title).to.equal(newBlogPost.title);
-          // cause Mongo should have created id on insertion
+          // because Mongo should have created id on insertion
           expect(res.body.id).to.not.be.null;
           expect(res.body.content).to.equal(newBlogPost.content);
           expect(res.body.author).to.equal(newBlogPost.author);
@@ -154,6 +154,42 @@ describe('Blog API resource', function() {
   });
 
   // PUT
+  describe('PUT endpoint', function() {
+
+    // strategy:
+    //  1. Get an existing blog post from db
+    //  2. Make a PUT request to update that blog post
+    //  3. Prove blog post returned by request contains data we sent
+    //  4. Prove blog post in db is correctly updated
+    it('should update fields you send over', function() {
+      const updateData = {
+        title: 'fofofofofofofof',
+        content: 'futuristic fusion'
+      };
+
+      return BlogPost
+        .findOne()
+        .then(function(post) {
+          updateData.id = post.id;
+
+          // make request then inspect it to make sure it reflects
+          // data we sent
+          return chai.request(app)
+            .put(`/posts/${post.id}`)
+            .send(updateData);
+        })
+        .then(function(res) {
+          expect(res).to.have.status(204);
+
+          return BlogPost.findById(updateData.id);
+        })
+        .then(function(post) {
+          expect(post.title).to.equal(updateData.title);
+          expect(post.content).to.equal(updateData.content);
+        });
+    });
+  });
+
   // DELETE
 });
 
