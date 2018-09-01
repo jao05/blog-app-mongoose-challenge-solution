@@ -3,7 +3,7 @@
 // Imports
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const faker = require('faker'); // Used to add content to database
+//******const faker = require('faker'); // Used to add content to database************
 const mongoose = require('mongoose');
 
 // this makes the 'expect' syntax available throughout
@@ -33,7 +33,7 @@ function tearDownDb() {
 function seedBlogData(){
   const seededBlog = {
     title: "A Great Blog",
-    content: "Some great content"
+    content: "Some great content",
     author: {
       firstName: "Great",
       lastName: "Author"
@@ -125,7 +125,7 @@ describe('Blog API resource', function() {
           
           expect(resBlogPost.title).to.equal(post.title);
           expect(resBlogPost.content).to.equal(post.content);
-          expect(resBlogPost.author).to.equal(post.author);
+          expect(resBlogPost.author).to.equal(`${post.author.firstName} ${post.author.lastName}`);
           
         });
     });
@@ -142,7 +142,10 @@ describe('Blog API resource', function() {
       const newBlogPost = {
         title: "sampleTitle",
         content: "sampleContent",
-        author: "sampleAuthor"
+        author: {
+          firstName: "sampleFirstName",
+          lastName: "sampleLastName"
+        }
       }
 
       return chai.request(app)
@@ -153,19 +156,20 @@ describe('Blog API resource', function() {
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
           expect(res.body).to.include.keys(
-            '_id', 'title', 'content', 'author'); 
+            'id', 'title', 'content', 'author', 'created'); 
           expect(res.body.title).to.equal(newBlogPost.title);
           // because Mongo should have created id on insertion
           expect(res.body.id).to.not.be.null;
           expect(res.body.content).to.equal(newBlogPost.content);
-          expect(res.body.author).to.equal(newBlogPost.author);
+          expect(res.body.author).to.equal(`${newBlogPost.author.firstName} ${newBlogPost.author.lastName}`);
           
           return BlogPost.findById(res.body.id);
         })
         .then(function(post) {
           expect(post.title).to.equal(newBlogPost.title);
           expect(post.content).to.equal(newBlogPost.content);
-          expect(post.author).to.equal(newBlogPost.author);          
+          expect(post.author.firstName).to.equal(newBlogPost.author.firstName);
+          expect(post.author.lastName).to.equal(newBlogPost.author.lastName);          
         });
     });
   });
