@@ -191,6 +191,32 @@ describe('Blog API resource', function() {
   });
 
   // DELETE
+  describe('DELETE endpoint', function() {
+    // strategy:
+    //  1. get a blog post
+    //  2. make a DELETE request for that blog post's id
+    //  3. assert that response has right status code
+    //  4. prove that blog post with the id doesn't exist in db anymore
+    it('delete a blog post by id', function() {
+
+      let blogPost;
+
+      return Restaurant
+        .findOne()
+        .then(function(_blogPost) {
+          blogPost = _blogPost;
+          return chai.request(app).delete(`/posts/${blogPost.id}`);
+        })
+        .then(function(res) {
+          expect(res).to.have.status(204);
+          return BlogPost.findById(blogPost.id);
+        })
+        .then(function(_blogPost) {
+          expect(_blogPost).to.be.null;
+        });
+    });
+  });
+
 });
 
   
