@@ -119,6 +119,40 @@ describe('Blog API resource', function() {
   });
 
   // POST
+  describe('POST endpoint', function() {
+    // strategy: make a POST request with data,
+    // then prove that the blog post we get back has
+    // right keys, and that `id` is there (which means
+    // the data was inserted into db)
+    it('should add a new blog post', function() {
+
+      const newBlogPost = generateRestaurantData(); //************* another auto-generate consideration...**********     
+
+      return chai.request(app)
+        .post('/posts')
+        .send(newBlogPost)
+        .then(function(res) {
+          expect(res).to.have.status(201);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body).to.include.keys(
+            'id', 'title', 'content', 'author'); // ***** id here??************
+          expect(res.body.title).to.equal(newBlogPost.title);
+          // cause Mongo should have created id on insertion
+          expect(res.body.id).to.not.be.null;
+          expect(res.body.content).to.equal(newBlogPost.content);
+          expect(res.body.author).to.equal(newBlogPost.author);
+          
+          return BlogPost.findById(res.body.id);
+        })
+        .then(function(post) {
+          expect(post.title).to.equal(newBlogPost.title);
+          expect(post.content).to.equal(newBlogPost.content);
+          expect(post.author).to.equal(newBlogPost.author);          
+        });
+    });
+  });
+
   // PUT
   // DELETE
 });
