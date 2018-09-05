@@ -1,2 +1,10 @@
 language: node_js
 node_js: node
+deploy:
+  provider: heroku
+  api_key:
+    secure: Xoyo8ve/tMqslETAo7IepfiYXl5o4ZOgOhS9U9u4B0shjhZJd9Gry0BU0leL1Uhiu7X1m7dpgJLRV/JsRR1dH0KjvQRIxEio5Y+yCZzMWqA8mAjJpyyTLL+2/+pMEGCUxD5W7mX+A9YlGG1X7r2tdfWGlSsqiic2sydTaUZYI4lTd9L1K6Pl/MKhpdKQIWtZA8eZggDjkaiiBjG0fvAoYOPgk36ayWSA0MfdAVqJGRQggp2z2+gk0kEL9HHH19HmyM9LYDOEpb5tDHtdRzSIkZpaiXv/4qElwNRt6HFOo8DOlLUL2Dpjov22REnFFAm78HnQCf2lgxLddzRVaj0yLSLTqIl5A2ey7judjmXh2KaGDrrJr4s2bGI3I2o3tvlMT5pwzcdJrIDb21ULXC2aaWXSCpUJkypqsf5oWsakRhRum6KBdwl4ooxyX6yqt1+ubFxBaz26+huKprYIUoPlktXupOQQKCPOC2rq40ImtEfMTp4skHLU9omHIM/BisusOjVfuV8LE/gwvfQtYb5og1DB91T8tK1hgKGq2KS3X/IlVBpqrXEGImmxjubCdb1BD5hCunrBJArCbdtHatDhR0fH6zCCVTOHhXDuL2TRXgq10DRsL7fwRgs3pE7FLiI60FkKrLTutDOAupLyc4u0vAx4HwOS5BRH9/uz5+/efSE=
+  app: frozen-hollows-95130
+  on:
+    repo: jao05/blog-app-mongoose-challenge-solution
+    branch: master
