@@ -9,6 +9,7 @@ const { TEST_DATABASE_URL, PORT } = require('./config');
 const { BlogPost } = require('./models');
 
 const app = express();
+// test comment
 
 app.use(morgan('common'));
 app.use(express.json());
